@@ -4,6 +4,7 @@ class RoomBase(BaseModel):
     name: str
     status: bool
     price: float
+    image: str
 
     class Config:
         orm_mode = True

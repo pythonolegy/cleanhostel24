@@ -1,4 +1,4 @@
-from http.client import HTTPException
+from fastapi import HTTPException
 
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
@@ -34,7 +34,7 @@ def create_room(room: schemas.RoomCreate, db: Session = Depends(get_db)):
     return crud.create_room(db=db, room=room)
 
 @app.put("/rooms/{room_id}", response_model=schemas.Room)
-def update_room(room_id: int, room: schemas.RoomCreate, db: Session = Depends(get_db)):
+def update_room(room_id: int, room: schemas.RoomUpdate, db: Session = Depends(get_db)):
     db_room = crud.get_room(db, room_id=room_id)
     if db_room is None:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -46,3 +46,4 @@ def delete_room(room_id: int, db: Session = Depends(get_db)):
     if db_room is None:
         raise HTTPException(status_code=404, detail="Room not found")
     return crud.delete_room(db=db, room_id=room_id)
+
