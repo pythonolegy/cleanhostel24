@@ -17,12 +17,12 @@ def get_db():
         db.close()
 
 @app.post("/rooms/")
-def create_room(name: str, db: Session = Depends(get_db)):
+def create_room(name: str, status: bool=True, db: Session = Depends(get_db)):
     db_room = db.query(models.Room).filter(models.Room.name == name).first()
     if db_room:
-        raise HTTPException(status_code=400, detail="Room already exists")
+        raise HTTPException()
 
-    new_room = models.Room(name=name)
+    new_room = models.Room(name=name, status=status)
     db.add(new_room)
     db.commit()
     db.refresh(new_room)
