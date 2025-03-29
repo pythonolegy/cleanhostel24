@@ -1,34 +1,44 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 
-def create_room(db: Session, room: schemas.RoomCreate):
+# Создание комнаты
+async def create_room(db: AsyncSession, room: schemas.RoomCreate):
     db_room = models.Room(name=room.name, status=room.status, price=room.price, image=room.image)
     db.add(db_room)
-    db.commit()
-    db.refresh(db_room)
+    await db.commit()  # асинхронная коммит
+    await db.refresh(db_room)  # асинхронный refresh
     return db_room
 
-def get_rooms(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Room).offset(skip).limit(limit).all()
+# Получение списка комнат
+async def get_rooms(db: AsyncSession, skip: int = 0, limit: int = 100):
+    result = await db.execute(select(models.Room).offset(skip).limit(limit))
+    return result.scalars().all()
 
-def get_room(db: Session, room_id: int):
-    return db.query(models.Room).filter(models.Room.id == room_id).first()
+# Получение комнаты по id
+async def get_room(db: AsyncSession, room_id: int):
+    result = await db.execute(select(models.Room).filter(models.Room.id == room_id))
+    return result.scalars().first()
 
-def update_room(db: Session, room_id: int, room: schemas.RoomUpdate):
-    db_room = db.query(models.Room).filter(models.Room.id == room_id).first()
+# Обновление информации о комнате
+async def update_room(db: AsyncSession, room_id: int, room: schemas.RoomUpdate):
+    result = await db.execute(select(models.Room).filter(models.Room.id == room_id))
+    db_room = result.scalars().first()
     if db_room:
         db_room.name = room.name
         db_room.status = room.status
         db_room.price = room.price
         db_room.image = room.image
-        db.commit()
-        db.refresh(db_room)
+        await db.commit()  # асинхронный коммит
+        await db.refresh(db_room)  # асинхронный refresh
         return db_room
     return None
 
-def delete_room(db: Session, room_id: int):
-    db_room = db.query(models.Room).filter(models.Room.id == room_id).first()
+# Удаление комнаты
+async def delete_room(db: AsyncSession, room_id: int):
+    result = await db.execute(select(models.Room).filter(models.Room.id == room_id))
+    db_room = result.scalars().first()
     if db_room:
-        db.delete(db_room)
-        db.commit()
+        await db.delete(db_room)  # асинхронное удаление
+        await db.commit()  # асинхронный коммит
     return db_room

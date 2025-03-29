@@ -1,18 +1,18 @@
 import os
-
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, Boolean, Float
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+engine = create_async_engine(DATABASE_URL, echo=True)
 
+async_session_maker = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+
+Base = declarative_base()
 
 class Room(Base):
     __tablename__ = "rooms"
@@ -21,7 +21,4 @@ class Room(Base):
     name = Column(String, unique=False, index=True)
     status = Column(Boolean, default=True)
     price = Column(Float, default=0.0)
-    image = Column(String, default=None)
-
-
-Base.metadata.create_all(bind=engine)
+    image = Column(String)
