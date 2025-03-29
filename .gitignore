@@ -1,2 +1,14 @@
-venv
-.venv
+venv/
+.venv/
+
+.idea/
+.vscode/
+
+*.pyc
+__pycache__/
+
+backend/.env
+
+/backend/alembic/env.py
+/backend/alembic/README
+/backend/alembic/script.py.mako
