@@ -2,6 +2,10 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from . import models, schemas
 
+async def get_user_by_username(db: AsyncSession, username: str):
+    result = await db.execute(select(models.User).filter(models.User.name == username))
+    return result.scalars().first()
+
 # Создание комнаты
 async def create_room(db: AsyncSession, room: schemas.RoomCreate):
     db_room = models.Room(name=room.name, status=room.status, price=room.price, image=room.image)

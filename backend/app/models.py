@@ -22,3 +22,10 @@ class Room(Base):
     status = Column(Boolean, default=True)
     price = Column(Float, default=0.0)
     image = Column(String)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=False, index=True)
+    password = Column(String)
