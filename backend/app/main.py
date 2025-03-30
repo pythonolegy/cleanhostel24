@@ -1,11 +1,26 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.middleware.cors import CORSMiddleware
 
 from . import crud, schemas
 from .database import async_session_maker, init_db
 
 
 app = FastAPI()
+
+# Разрешаем запросы с фронта (замени на актуальный порт, если у тебя другой)
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Инициализация базы данных при старте приложения
 @app.on_event("startup")
