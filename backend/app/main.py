@@ -1,10 +1,8 @@
-from fastapi import Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import FileResponse
 
 from . import crud, schemas
 from .database import async_session_maker, init_db
-from fastapi import FastAPI
 
 
 app = FastAPI()
