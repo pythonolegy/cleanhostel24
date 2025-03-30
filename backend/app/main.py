@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .admin import init_admin
 from . import crud, schemas
 from .database import async_session_maker, init_db
 
@@ -11,6 +12,8 @@ app = FastAPI()
 @app.on_event("startup")
 async def on_startup():
     await init_db()  # Асинхронный вызов инициализации базы данных
+
+init_admin(app)  # Инициализация админки
 
 # Заменяем Session на асинхронную сессию
 async def get_db():
@@ -49,3 +52,7 @@ async def delete_room(room_id: int, db: AsyncSession = Depends(get_db)):
     if db_room is None:
         raise HTTPException(status_code=404, detail="Room not found")
     return await crud.delete_room(db=db, room_id=room_id)  # асинхронный вызов
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
